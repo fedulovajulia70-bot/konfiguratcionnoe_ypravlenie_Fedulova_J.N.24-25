@@ -1,0 +1,23 @@
+# Проверка базовых команд
+pwd
+ls
+# Создание директорий и переход в них
+mkdir test_dir
+ls
+cd test_dir
+pwd
+# Удаление директории
+cd ..
+rm test_dir
+ls
+# Поиск файлов
+find *.txt
+# Проверка uniq
+uniq duplicates.txt
+# Проверка ошибок
+mkdir test_dir
+mkdir test_dir
+rm non_existent_file
+unknown_command
+# Выход
+exit
