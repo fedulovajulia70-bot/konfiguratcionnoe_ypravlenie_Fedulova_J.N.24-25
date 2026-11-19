@@ -1,0 +1,16 @@
+[project]
+name = "npm-dependency-graph-26"
+version = "1.0.0"
+description = "Variant 26: npm dependency graphs using the Python standard library"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.ruff]
+line-length = 79
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "C90"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10

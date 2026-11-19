@@ -1,0 +1,8 @@
+{
+  "package": "A",
+  "repository": "../repositories/diamond.json",
+  "test_mode": true,
+  "output": "../../output/diamond.svg",
+  "ascii_tree": true,
+  "filter_substring": ""
+}
