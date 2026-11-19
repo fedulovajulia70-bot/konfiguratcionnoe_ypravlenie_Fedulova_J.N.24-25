@@ -9,6 +9,7 @@ from .errors import AppError
 from .graph import build_graph, describe_graph
 from .operations import load_order
 from .repository import create_repository
+from .visualization import ascii_tree, export_graph
 
 
 def run(config, stage):
@@ -29,6 +30,12 @@ def run(config, stage):
     if stage == 4:
         print("Load order: " + " -> ".join(load_order(graph)))
         return
+    if stage == 5:
+        if config.ascii_tree:
+            print(ascii_tree(graph))
+        source, image = export_graph(graph, config.output)
+        print(f"D2: {source}\nSVG: {image}")
+        return
     print(describe_graph(graph))
     for cycle in graph.cycles:
         print(f"Cycle: {' -> '.join(cycle)}")
@@ -38,7 +45,7 @@ def main(argv=None):
     """Read arguments and return a process exit code."""
     parser = argparse.ArgumentParser(description="npm dependency graph, v26")
     parser.add_argument("config", help="path to the JSON configuration")
-    parser.add_argument("--stage", type=int, choices=range(1, 6), default=1)
+    parser.add_argument("--stage", type=int, choices=range(1, 6), default=5)
     args = parser.parse_args(argv)
     try:
         run(load_config(args.config), args.stage)

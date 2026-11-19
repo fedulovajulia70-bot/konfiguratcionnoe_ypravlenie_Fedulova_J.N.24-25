@@ -50,15 +50,18 @@ def validate_repository(value, test_mode, base):
     if not isinstance(value, str) or not value.strip():
         raise AppError("repository: expected a nonempty string")
     if test_mode:
-        path = (base / value).resolve()
+        try:
+            path = (base / value).resolve()
+        except (OSError, ValueError) as error:
+            raise AppError(f"repository: invalid path: {error}") from error
         if not path.is_file():
             raise AppError(f"repository: file does not exist: {path}")
         return str(path)
-    parsed = urlparse(value)
     try:
+        parsed = urlparse(value)
         parsed.port
     except ValueError as error:
-        raise AppError("repository: invalid URL port") from error
+        raise AppError("repository: invalid URL or port") from error
     if parsed.scheme not in {"http", "https"} or not parsed.hostname:
         raise AppError("repository: expected an HTTP(S) URL")
     if parsed.query or parsed.fragment or parsed.username or parsed.password:
@@ -70,7 +73,10 @@ def validate_output(value, base, protected):
     """Validate an SVG destination without creating files."""
     if not isinstance(value, str) or not value.strip():
         raise AppError("output: expected a nonempty string")
-    path = (base / value).resolve()
+    try:
+        path = (base / value).resolve()
+    except (OSError, ValueError) as error:
+        raise AppError(f"output: invalid path: {error}") from error
     if path.suffix.lower() != ".svg" or path.is_dir():
         raise AppError("output: expected an SVG file path")
     if path in protected or path.with_suffix(".d2") in protected:

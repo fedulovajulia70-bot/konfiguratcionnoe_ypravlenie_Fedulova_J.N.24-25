@@ -39,3 +39,12 @@ class SemverTests(unittest.TestCase):
         for spec in ("^3.0.0", "git+https://host/repo", "file:../a"):
             with self.subTest(spec=spec), self.assertRaises(AppError):
                 select_version(["1.0.0"], spec, {})
+
+    def test_partial_upper_excludes_prereleases(self):
+        """Match npm's -0 upper bounds even with explicit prerelease opt-in."""
+        versions = ["1.0.0", "2.0.0-beta.1"]
+        self.assertEqual(
+            select_version(versions, ">=1.0.0 <2", {}), "1.0.0",
+        )
+        with self.assertRaises(AppError):
+            select_version(versions, ">=2.0.0-beta.1 <2", {})

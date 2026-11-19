@@ -81,6 +81,11 @@ def increment(version, index):
     return Version(tuple(core))
 
 
+def upper_bound(version):
+    """Exclude all prereleases of a synthetic upper version, as npm does."""
+    return Version(version.core, ("0",))
+
+
 def bounded(operator, version, count):
     """Expand caret, tilde, exact or wildcard ranges into comparisons."""
     if not count:
@@ -94,7 +99,7 @@ def bounded(operator, version, count):
         return [("=", version)]
     else:
         index = count - 1
-    return [(">=", version), ("<", increment(version, index))]
+    return [(">=", version), ("<", upper_bound(increment(version, index)))]
 
 
 def comparator(token):
@@ -113,6 +118,8 @@ def comparator(token):
     if count < COMPONENTS and operator in {">", "<="}:
         version = increment(version, count - 1)
         operator = ">=" if operator == ">" else "<"
+    if count < COMPONENTS and operator == "<":
+        version = upper_bound(version)
     return [(operator, version)]
 
 
@@ -125,7 +132,7 @@ def compile_group(text):
         bounds = [(">=", lower)] if lower_count else []
         if upper_count:
             bound = ("<=", upper) if upper_count == COMPONENTS else (
-                "<", increment(upper, upper_count - 1),
+                "<", upper_bound(increment(upper, upper_count - 1)),
             )
             bounds.append(bound)
         return bounds

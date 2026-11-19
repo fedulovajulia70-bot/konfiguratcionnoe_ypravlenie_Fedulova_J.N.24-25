@@ -40,9 +40,9 @@ class ConfigTests(unittest.TestCase):
         """Reject incorrect values for every user parameter."""
         invalid = {
             "package": ["", 26, "a", "A/B"],
-            "repository": ["missing.json", "", 26],
+            "repository": ["missing.json", "", 26, "bad\u0000path"],
             "test_mode": ["true", 1, None],
-            "output": ["file.png", "", None, "repo.json"],
+            "output": ["file.png", "", None, "repo.json", "bad\u0000.svg"],
             "ascii_tree": ["false", 0, None],
             "filter_substring": [None, [], "A"],
         }
@@ -75,7 +75,9 @@ class ConfigTests(unittest.TestCase):
         self.data["repository"] = "https://registry.npmjs.org/"
         self.assertFalse(self.load().test_mode)
         self.assertEqual(split_package("@scope/pkg"), ("@scope/pkg", "latest"))
-        for url in ("ftp://host", "https://host:bad", "http://", "http://h?q"):
+        invalid = ("ftp://host", "https://host:bad", "http://", "http://h?q",
+                   "https://[broken")
+        for url in invalid:
             with self.subTest(url=url), self.assertRaises(AppError):
                 self.data["repository"] = url
                 self.load()

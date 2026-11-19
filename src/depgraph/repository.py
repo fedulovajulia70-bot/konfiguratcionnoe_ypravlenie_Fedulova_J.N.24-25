@@ -63,7 +63,9 @@ class NpmRepository:
             raise AppError(f"Invalid npm dependency name: {name}")
         data = self.metadata(name)
         tags = data.get("dist-tags", {})
-        if not isinstance(tags, dict):
+        if not isinstance(tags, dict) or any(
+            not isinstance(value, str) for value in tags.values()
+        ):
             raise AppError(f"Invalid dist-tags for {name}")
         version = select_version(data["versions"], spec, tags)
         manifest = data["versions"][version]
