@@ -1,0 +1,8 @@
+{
+  "package": "A",
+  "repository": "../repositories/chain.json",
+  "test_mode": true,
+  "output": "../../output/chain.svg",
+  "ascii_tree": true,
+  "filter_substring": ""
+}

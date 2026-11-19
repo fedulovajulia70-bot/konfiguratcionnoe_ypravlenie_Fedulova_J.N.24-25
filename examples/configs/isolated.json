@@ -1,0 +1,8 @@
+{
+  "package": "A",
+  "repository": "../repositories/isolated.json",
+  "test_mode": true,
+  "output": "../../output/isolated.svg",
+  "ascii_tree": false,
+  "filter_substring": ""
+}

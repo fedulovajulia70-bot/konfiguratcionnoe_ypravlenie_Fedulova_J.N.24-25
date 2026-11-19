@@ -6,6 +6,7 @@ from dataclasses import asdict
 
 from .config import load_config, split_package
 from .errors import AppError
+from .graph import build_graph, describe_graph
 from .repository import create_repository
 
 
@@ -18,9 +19,15 @@ def run(config, stage):
     repository = create_repository(config)
     name, spec = split_package(config.package)
     root = repository.resolve(name, spec)
-    print(root.key)
-    for name, spec in sorted(root.dependencies.items()):
-        print(f"{name}: {spec}")
+    if stage == 2:
+        print(root.key)
+        for name, spec in sorted(root.dependencies.items()):
+            print(f"{name}: {spec}")
+        return
+    graph = build_graph(repository, root, config.filter_substring)
+    print(describe_graph(graph))
+    for cycle in graph.cycles:
+        print(f"Cycle: {' -> '.join(cycle)}")
 
 
 def main(argv=None):
