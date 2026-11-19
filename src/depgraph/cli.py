@@ -4,14 +4,23 @@ import argparse
 import sys
 from dataclasses import asdict
 
-from .config import load_config
+from .config import load_config, split_package
 from .errors import AppError
+from .repository import create_repository
 
 
 def run(config, stage):
     """Execute the selected assignment stage."""
-    for key, value in asdict(config).items():
-        print(f"{key}={value}")
+    if stage == 1:
+        for key, value in asdict(config).items():
+            print(f"{key}={value}")
+        return
+    repository = create_repository(config)
+    name, spec = split_package(config.package)
+    root = repository.resolve(name, spec)
+    print(root.key)
+    for name, spec in sorted(root.dependencies.items()):
+        print(f"{name}: {spec}")
 
 
 def main(argv=None):

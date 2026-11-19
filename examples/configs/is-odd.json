@@ -1,0 +1,8 @@
+{
+  "package": "is-odd@3.0.1",
+  "repository": "https://registry.npmjs.org",
+  "test_mode": false,
+  "output": "../../output/is-odd.svg",
+  "ascii_tree": true,
+  "filter_substring": ""
+}

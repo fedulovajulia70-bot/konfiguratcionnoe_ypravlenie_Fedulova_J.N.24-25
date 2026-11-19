@@ -38,3 +38,18 @@ URL и пути приводят к сообщению `Error: ...` и коду 
 - `errors`: `AppError` для ожидаемых ошибок приложения.
 
 Этап 1 выводит все параметры в формате `ключ=значение`.
+
+Этап 2 выводит прямые зависимости из поля `dependencies` выбранной версии:
+
+```console
+python src/main.py examples/configs/is-odd.json --stage 2
+```
+
+`repository` — URL npm-реестра с JSON API, а не ссылка на исходники GitHub.
+`repository.NpmRepository` самостоятельно делает HTTP-запросы через `urllib`,
+кэширует метаданные и разбирает JSON. `resolve` возвращает `Package`.
+`TestRepository` читает JSON вида `{"A": ["B"], "B": []}`.
+`semver.select_version` самостоятельно выбирает максимальную подходящую
+версию: точная версия, dist-tag, `^`, `~`, `*`, `x`, сравнения, AND, `||`,
+диапазон с дефисом и явно указанные prerelease. Поддерживаются npm-алиасы.
+Git-, URL-, workspace- и file-зависимости завершаются понятной ошибкой.

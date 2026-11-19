@@ -1,15 +1,12 @@
 """Configuration validation, including all six user parameters."""
 
 import json
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-
-from depgraph.config import load_config, split_package
-from depgraph.errors import AppError
+from src.depgraph.config import load_config, split_package
+from src.depgraph.errors import AppError
 
 
 class ConfigTests(unittest.TestCase):
