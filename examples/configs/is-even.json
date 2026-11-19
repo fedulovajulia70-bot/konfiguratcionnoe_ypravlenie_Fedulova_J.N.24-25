@@ -1,0 +1,8 @@
+{
+  "package": "is-even@1.0.0",
+  "repository": "https://registry.npmjs.org",
+  "test_mode": false,
+  "output": "../../output/is-even.svg",
+  "ascii_tree": true,
+  "filter_substring": ""
+}

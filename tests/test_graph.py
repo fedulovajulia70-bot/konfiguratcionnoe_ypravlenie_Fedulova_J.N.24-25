@@ -4,7 +4,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
+from src.depgraph.errors import AppError
 from src.depgraph.graph import build_graph
+from src.depgraph.operations import load_order
 from src.depgraph.repository import Package, TestRepository
 
 REPOSITORIES = Path(__file__).parents[1] / "examples/repositories"
@@ -64,3 +66,25 @@ class GraphTests(unittest.TestCase):
         graph = build_graph(repository, root)
         self.assertEqual(len(graph.nodes), 4)
         self.assertEqual(graph.edges["c@1.0.0"], ["b@2.0.0"])
+
+    def test_load_order(self):
+        """Every dependency precedes every package depending on it."""
+        for name in ("diamond", "chain", "isolated"):
+            with self.subTest(name=name):
+                graph = graph_for(name)
+                order = load_order(graph)
+                self.assertEqual(set(order), set(graph.nodes))
+                for parent, children in graph.edges.items():
+                    for child in children:
+                        self.assertLess(
+                            order.index(child), order.index(parent),
+                        )
+        self.assertEqual(
+            load_order(graph_for("diamond")), ["D", "B", "C", "A"],
+        )
+
+    def test_cyclic_load_order(self):
+        """Reject a cycle instead of presenting a misleading partial order."""
+        for name in ("cycle", "self-cycle"):
+            with self.subTest(name=name), self.assertRaises(AppError):
+                load_order(graph_for(name))

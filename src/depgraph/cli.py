@@ -7,6 +7,7 @@ from dataclasses import asdict
 from .config import load_config, split_package
 from .errors import AppError
 from .graph import build_graph, describe_graph
+from .operations import load_order
 from .repository import create_repository
 
 
@@ -25,6 +26,9 @@ def run(config, stage):
             print(f"{name}: {spec}")
         return
     graph = build_graph(repository, root, config.filter_substring)
+    if stage == 4:
+        print("Load order: " + " -> ".join(load_order(graph)))
+        return
     print(describe_graph(graph))
     for cycle in graph.cycles:
         print(f"Cycle: {' -> '.join(cycle)}")

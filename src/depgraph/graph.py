@@ -14,7 +14,7 @@ class DependencyGraph:
 
 
 def build_graph(repository, root, excluded=""):
-    """Recursively visit dependencies, pruning filtered names before fetching."""
+    """Visit dependencies recursively, pruning names before fetching."""
     graph = DependencyGraph(root.key)
     active = []
 

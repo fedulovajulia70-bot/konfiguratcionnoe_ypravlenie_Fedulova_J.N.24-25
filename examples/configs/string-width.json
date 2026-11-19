@@ -1,0 +1,8 @@
+{
+  "package": "string-width@4.2.3",
+  "repository": "https://registry.npmjs.org",
+  "test_mode": false,
+  "output": "../../output/string-width.svg",
+  "ascii_tree": true,
+  "filter_substring": ""
+}
