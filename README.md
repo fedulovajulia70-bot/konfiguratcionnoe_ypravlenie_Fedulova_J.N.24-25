@@ -404,11 +404,3 @@ Git-, URL-, workspace- и file-зависимости не поддержива�
 | `demo.main` | Генерация всех демонстрационных файлов |
 
 </details>
-
-## Документация форматов
-
-- [Метаданные npm](https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md).
-- [Диапазоны SemVer](https://github.com/npm/node-semver#ranges).
-- [npm ls](https://docs.npmjs.com/cli/v12/commands/npm-ls/).
-- [Связи D2](https://d2lang.com/tour/connections).
-- [Экспорт D2](https://d2lang.com/tour/exports/).
