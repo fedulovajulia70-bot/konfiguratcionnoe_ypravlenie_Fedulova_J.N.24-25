@@ -45,18 +45,16 @@ def validate_package(value, test_mode):
         raise AppError("package: invalid test node or npm package name")
 
 
-def validate_repository(value, test_mode, base):
-    """Resolve a test file or validate an HTTP(S) registry URL."""
-    if not isinstance(value, str) or not value.strip():
-        raise AppError("repository: expected a nonempty string")
-    if test_mode:
-        try:
-            path = (base / value).resolve()
-        except (OSError, ValueError) as error:
-            raise AppError(f"repository: invalid path: {error}") from error
-        if not path.is_file():
-            raise AppError(f"repository: file does not exist: {path}")
-        return str(path)
+def resolve_path(value, base, parameter):
+    """Resolve a path and retain parameter-specific validation errors."""
+    try:
+        return (base / value).resolve()
+    except (OSError, ValueError) as error:
+        raise AppError(f"{parameter}: invalid path: {error}") from error
+
+
+def validate_registry_url(value):
+    """Validate the scheme, host, port and allowed URL components."""
     try:
         parsed = urlparse(value)
         parsed.port
@@ -69,18 +67,20 @@ def validate_repository(value, test_mode, base):
     return value.rstrip("/")
 
 
-def validate_output(value, base, protected):
-    """Validate an SVG destination without creating files."""
+def validate_repository(value, test_mode, base):
+    """Resolve a test file or validate an HTTP(S) registry URL."""
     if not isinstance(value, str) or not value.strip():
-        raise AppError("output: expected a nonempty string")
-    try:
-        path = (base / value).resolve()
-    except (OSError, ValueError) as error:
-        raise AppError(f"output: invalid path: {error}") from error
-    if path.suffix.lower() != ".svg" or path.is_dir():
-        raise AppError("output: expected an SVG file path")
-    if path in protected or path.with_suffix(".d2") in protected:
-        raise AppError("output: would overwrite an input file")
+        raise AppError("repository: expected a nonempty string")
+    if not test_mode:
+        return validate_registry_url(value)
+    path = resolve_path(value, base, "repository")
+    if not path.is_file():
+        raise AppError(f"repository: file does not exist: {path}")
+    return str(path)
+
+
+def validate_writable_output(path):
+    """Check destination permissions without creating output files."""
     ancestor = path.parent
     while not ancestor.exists():
         ancestor = ancestor.parent
@@ -88,6 +88,18 @@ def validate_output(value, base, protected):
         raise AppError("output: parent directory is not writable")
     if path.exists() and not os.access(path, os.W_OK):
         raise AppError("output: file is not writable")
+
+
+def validate_output(value, base, protected):
+    """Validate an SVG destination without creating files."""
+    if not isinstance(value, str) or not value.strip():
+        raise AppError("output: expected a nonempty string")
+    path = resolve_path(value, base, "output")
+    if path.suffix.lower() != ".svg" or path.is_dir():
+        raise AppError("output: expected an SVG file path")
+    if path in protected or path.with_suffix(".d2") in protected:
+        raise AppError("output: would overwrite an input file")
+    validate_writable_output(path)
     return path
 
 
